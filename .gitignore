@@ -1,2 +1,30 @@
 # created by virtualenv automatically
 
+# IDE settings
+.idea/
+.vscode/
+
+# Python virtual environments
+venv/
+env/
+pyvenv.cfg
+
+# Byte-compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+
+# Playwright output
+test-results/
+screenshots/
+videos/
+
+# Dependency folders
+Lib/
+Scripts/
+include/
+site-packages/
+
+# OS generated files
+.DS_Store
+Thumbs.db
