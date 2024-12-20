@@ -14,58 +14,32 @@ jobs:
   dynamic-tests:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install yq
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
-
+      # Install dependencies and Playwright
       - name: Install dependencies
         run: |
-          if [ ! -d ".github/tests_pipelines" ]; then
-            echo "Error: Directory .github/tests_pipelines does not exist"
-            exit 1
-          fi
-          for file in $(find .github/tests_pipelines -name '*.yml'); do
-            echo "Processing $file"
-
-            # Извлечение BASIC_PATH из YAML-файла
-            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
-
-            # Извлечение других путей
-            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
-            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
-            echo "Installing dependencies from $REQUIREMENTS_PATH"
-
-            # Установка зависимостей
-            pip install -r "$REQUIREMENTS_PATH"
-          done
-          
-          # Установка Playwright
+          pip install --upgrade pip
           pip install playwright
           playwright install
 
+      # Run tests with xvfb
       - name: Run tests
         run: |
           for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
-
-            # Извлечение BASIC_PATH из YAML-файла
             BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
-
-            # Извлечение пути к тесту
             TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
             echo "Running tests from $TEST_PATH"
             
-            # Запуск тестов
-            pytest "$TEST_PATH"
+            # Run tests with xvfb-run
+            xvfb-run pytest "$TEST_PATH"
           done
