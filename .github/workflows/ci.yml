@@ -24,9 +24,31 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install playwright
-          playwright install
+          if [ ! -d ".github/tests_pipelines" ]; then
+            echo "Error: Directory .github/tests_pipelines does not exist"
+            exit 1
+          fi
+          for file in $(find .github/tests_pipelines -name '*.yml'); do
+            echo "Processing $file"
+          
+            # Extract paths from YAML
+            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
+            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
+          
+            echo "Checking requirements file at $REQUIREMENTS_PATH"
+            cat "$REQUIREMENTS_PATH"
+          
+            echo "Installing dependencies from $REQUIREMENTS_PATH"
+            pip install --upgrade pip
+            pip install -r "$REQUIREMENTS_PATH"
+          
+            echo "Installing Playwright browsers"
+            playwright install
+          
+            echo "Running tests from $TEST_PATH"
+            xvfb-run pytest "$TEST_PATH"
+          done
 
       - name: Run tests
         run: |
