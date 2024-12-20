@@ -14,33 +14,24 @@ jobs:
   dynamic-tests:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Проверка содержимого
-      - name: List files in .github directory
-        run: ls -R .github
 
-      # Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      # Install yq for YAML parsing
-      - name: Install yq
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
+          pip install --upgrade pip
+          pip install -r .github/tests_pipelines/basic_search.yml
+          pip install playwright
 
-      # Install Playwright and browsers
-      - name: Install Playwright and browsers
+      - name: Install Playwright browsers
         run: playwright install
 
-      # Parse all YAML files in .github/tests_pipelines and run tests
       - name: Load YAML files and run tests
         run: |
           if [ ! -d ".github/tests_pipelines" ]; then
@@ -54,10 +45,9 @@ jobs:
             REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
             echo "Found TEST_PATH=$TEST_PATH and REQUIREMENTS_PATH=$REQUIREMENTS_PATH"
 
-            # Install dependencies
-            pip install --upgrade pip
+            # Установка зависимостей
             pip install -r "$REQUIREMENTS_PATH"
 
-            # Run tests
+            # Запуск тестов
             pytest "$TEST_PATH"
           done
