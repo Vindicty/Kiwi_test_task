@@ -39,7 +39,7 @@ jobs:
       # Parse all YAML files in .github/tests_pipelines
       - name: Load YAML files and run tests
         run: |
-          if [ ! -d ".github/tests_piplines" ]; then
+          if [ ! -d ".github/tests_pipelines" ]; then
             echo "Error: Directory .github/tests_piplines does not exist"
             exit 1
           fi
