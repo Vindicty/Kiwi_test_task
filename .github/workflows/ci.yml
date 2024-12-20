@@ -18,6 +18,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Проверка содержимого (диагностика)
+      - name: List files
+        run: ls -R .github
+
       # Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -32,10 +36,14 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      # Parse all YAML files in tests/pipelines
+      # Parse all YAML files in .github/tests_pipelines
       - name: Load YAML files and run tests
         run: |
-          for file in $(find tests_pipelines -name '*.yml'); do
+          if [ ! -d ".github/tests_pipelines" ]; then
+            echo "Error: Directory .github/tests_pipelines does not exist"
+            exit 1
+          fi
+          for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
             TEST_PATH=$(yq '.variables.TEST_PATH' "$file")
             REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file")
