@@ -2,14 +2,12 @@ stages:
   - install
   - tests
 
-variables:
-  PLAYWRIGHT_BROWSERS_PATH: 0  # Устанавливаем браузеры локально
-
 install_dependencies:
   stage: install
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
+    - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install chromium  # Установка Chromium
 
 run_tests:
   stage: tests

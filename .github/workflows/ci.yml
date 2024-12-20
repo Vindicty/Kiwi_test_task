@@ -30,9 +30,10 @@ jobs:
           pip install --upgrade pip
           pip install -r tests/basic_search/requirements.txt
 
-      # Install Playwright browsers
-      - name: Install Playwright browsers
-        run: playwright install
+      # Install only Chromium browser
+      - name: Install Chromium browser only
+        run: |
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install chromium
 
       # Run tests with xvfb
       - name: Run tests with xvfb
