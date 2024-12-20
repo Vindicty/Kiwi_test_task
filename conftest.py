@@ -32,7 +32,7 @@ def browser():
     @yield browser instance Page: A Playwright page object for interacting with the browser during tests.
     """
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         browser_context = browser.new_context()
         accept_cookies(browser_context)
 
