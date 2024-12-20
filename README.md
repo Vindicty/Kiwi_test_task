@@ -110,3 +110,25 @@ While tests are designed to run automatically via GitHub Actions, you can also e
 - **CI/CD**:  
   For automated test execution, tests are integrated into GitHub Actions via the `.github/workflows/ci.yml` configuration.
 
+
+## Continuous Integration and Test Logs
+
+This project uses **GitHub Actions** for continuous integration to automate test execution. The CI/CD pipeline is configured to:
+- Install dependencies.
+- Dynamically run tests based on the configurations provided in `.github/tests_pipelines/`.
+- Generate logs for each workflow execution.
+
+### How to View GitHub Actions Logs
+You can view the logs of the automated tests directly in this repository:
+1. Go to the [Actions tab](https://github.com/Vindicty/Kiwi_test_task/actions).
+2. Select the latest workflow run (e.g., "CI Pipeline").
+3. Click on the workflow run to expand the logs.
+4. Navigate to specific sections (e.g., "Run tests") to see detailed execution logs.
+
+### Example Workflow
+Below is an example of the workflow process:
+- **Environment Setup**: Installing dependencies and preparing the test environment.
+- **Test Execution**: Running the test suite with `pytest` and generating logs.
+- **Results**: Logs include detailed information about passed and failed tests.
+
+By following the above steps, you can verify that the tests are correctly executed and analyze any potential issues directly from the logs.
