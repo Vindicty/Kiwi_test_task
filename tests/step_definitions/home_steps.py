@@ -1,4 +1,4 @@
-
+import asyncio
 from pytest_bdd import given, when, then, scenarios, parsers
 from config.urls import SEARCH_RESULTS_URL
 
