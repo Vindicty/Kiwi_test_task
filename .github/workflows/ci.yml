@@ -40,10 +40,10 @@ jobs:
       - name: Load YAML files and run tests
         run: |
           if [ ! -d ".github/tests_pipelines" ]; then
-            echo "Error: Directory .github/tests_piplines does not exist"
+            echo "Error: Directory .github/tests_pipelines does not exist"
             exit 1
           fi
-          for file in $(find .github/tests_piplines -name '*.yml'); do
+          for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
             BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
             TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
