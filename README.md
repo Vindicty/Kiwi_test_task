@@ -15,10 +15,6 @@ This testing framework is designed to automate functional testing for the [Kiwi.
 4. **Dynamic Test Management**: YAML-based configuration allows dynamic test selection and execution in CI/CD pipelines.
 
 ## Project Architecture
-
-The framework is designed with a modular and scalable structure, ensuring ease of maintenance and adaptability to new requirements. Below is an overview of the project’s architecture:
-## Project Architecture
-
 The framework is organized into several key components, each serving a specific purpose. Below is a detailed description of the project structure:
 
 ### Key Directories and Their Purpose
