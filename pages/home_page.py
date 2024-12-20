@@ -40,6 +40,7 @@ class HomePage:
         #convert recieved trip type argument to the value as in on the Site
         trip_type = trip_type.lower().capitalize()
 
+        self.page.locator(self.TRIP_TYPE_DROPDOWN).wait_for(state="visible")
         self.page.click(self.TRIP_TYPE_DROPDOWN)
         self.page.click(self.TRIP_TYPE_OPTION % trip_type)
         self.page.locator(self.SELECTED_TRIP_TYPE % trip_type).wait_for(state='visible')

@@ -34,6 +34,6 @@ jobs:
       - name: Install Playwright browsers
         run: playwright install
 
-      # Run tests
-      - name: Run tests
-        run: pytest tests/basic_search/test_basic_search.py
+      # Run tests with xvfb
+      - name: Run tests with xvfb
+        run: xvfb-run pytest tests/basic_search/test_basic_search.py
