@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Dynamic CI Pipeline
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - develop
 
 jobs:
-  test-basic-search:
+  dynamic-tests:
     runs-on: ubuntu-latest
     steps:
       # Checkout the repository
@@ -24,17 +24,27 @@ jobs:
         with:
           python-version: '3.9'
 
-      # Install dependencies
-      - name: Install dependencies
+      # Install yq for YAML parsing
+      - name: Install yq
         run: |
-          pip install --upgrade pip
-          pip install -r tests/basic_search/requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y jq
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
 
-      # Install only Chromium browser
-      - name: Install Chromium browser only
+      # Parse all YAML files in tests/pipelines
+      - name: Load YAML files and run tests
         run: |
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install chromium
+          for file in $(find tests_pipelines -name '*.yml'); do
+            echo "Processing $file"
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file")
+            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file")
+            echo "Found TEST_PATH=$TEST_PATH and REQUIREMENTS_PATH=$REQUIREMENTS_PATH"
 
-      # Run tests with xvfb
-      - name: Run tests with xvfb
-        run: xvfb-run pytest tests/basic_search/test_basic_search.py
+            # Install dependencies
+            pip install --upgrade pip
+            pip install -r "$REQUIREMENTS_PATH"
+
+            # Run tests
+            pytest "$TEST_PATH"
+          done

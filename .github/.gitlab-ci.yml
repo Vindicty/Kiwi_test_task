@@ -7,7 +7,9 @@ install_dependencies:
   script:
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install chromium  # Установка Chromium
+
+    # For Test task purposes and resourses saving install only Chromium
+    - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 playwright install chromium
 
 run_tests:
   stage: tests

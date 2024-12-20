@@ -1,0 +1,4 @@
+variables:
+  BASIC_PATH: "tests/basic_search/"
+  TEST_PATH: "${BASIC_PATH}test_basic_search.py"
+  REQUIREMENTS_PATH: "${BASIC_PATH}requirements.txt"
