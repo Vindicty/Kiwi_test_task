@@ -37,11 +37,15 @@ jobs:
           fi
           for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
-            
-            # Извлечение пути к requirements.txt из YAML-файла
-            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file")
+
+            # Извлечение BASIC_PATH из YAML-файла
+            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
+
+            # Извлечение других путей
+            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
             echo "Installing dependencies from $REQUIREMENTS_PATH"
-            
+
             # Установка зависимостей
             pip install -r "$REQUIREMENTS_PATH"
           done
@@ -54,9 +58,12 @@ jobs:
         run: |
           for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
-            
-            # Извлечение пути к тесту из YAML-файла
-            TEST_PATH=$(yq '.variables.TEST_PATH' "$file")
+
+            # Извлечение BASIC_PATH из YAML-файла
+            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
+
+            # Извлечение пути к тесту
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
             echo "Running tests from $TEST_PATH"
             
             # Запуск тестов
