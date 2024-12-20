@@ -1,0 +1,44 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test-basic-search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install yq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Load test configuration
+        run: |
+          echo "TEST_PATH=$(yq '.variables.TEST_PATH' ci_cd_integrations/tests_piplines/basic_search.yml)" >> $GITHUB_ENV
+          echo "REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' ci_cd_integrations/tests_piplines/basic_search.yml)" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r ${{ env.REQUIREMENTS_PATH }}
+
+      - name: Run tests
+        run: |
+          pytest ${{ env.TEST_PATH }}
