@@ -17,22 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install yq
         run: |
-          pip install --upgrade pip
-          pip install -r .github/tests_pipelines/basic_search.yml
-          pip install playwright
+          sudo apt-get update
+          sudo apt-get install -y jq
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
 
-      - name: Install Playwright browsers
-        run: playwright install
-
-      - name: Load YAML files and run tests
+      - name: Install dependencies
         run: |
           if [ ! -d ".github/tests_pipelines" ]; then
             echo "Error: Directory .github/tests_pipelines does not exist"
@@ -40,14 +37,28 @@ jobs:
           fi
           for file in $(find .github/tests_pipelines -name '*.yml'); do
             echo "Processing $file"
-            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
-            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
-            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
-            echo "Found TEST_PATH=$TEST_PATH and REQUIREMENTS_PATH=$REQUIREMENTS_PATH"
-
+            
+            # Извлечение пути к requirements.txt из YAML-файла
+            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file")
+            echo "Installing dependencies from $REQUIREMENTS_PATH"
+            
             # Установка зависимостей
             pip install -r "$REQUIREMENTS_PATH"
+          done
+          
+          # Установка Playwright
+          pip install playwright
+          playwright install
 
+      - name: Run tests
+        run: |
+          for file in $(find .github/tests_pipelines -name '*.yml'); do
+            echo "Processing $file"
+            
+            # Извлечение пути к тесту из YAML-файла
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file")
+            echo "Running tests from $TEST_PATH"
+            
             # Запуск тестов
             pytest "$TEST_PATH"
           done
