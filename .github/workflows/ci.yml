@@ -39,14 +39,15 @@ jobs:
       # Parse all YAML files in .github/tests_pipelines
       - name: Load YAML files and run tests
         run: |
-          if [ ! -d ".github/tests_pipelines" ]; then
-            echo "Error: Directory .github/tests_pipelines does not exist"
+          if [ ! -d ".github/tests_piplines" ]; then
+            echo "Error: Directory .github/tests_piplines does not exist"
             exit 1
           fi
-          for file in $(find .github/tests_pipelines -name '*.yml'); do
+          for file in $(find .github/tests_piplines -name '*.yml'); do
             echo "Processing $file"
-            TEST_PATH=$(yq '.variables.TEST_PATH' "$file")
-            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file")
+            BASIC_PATH=$(yq '.variables.BASIC_PATH' "$file")
+            TEST_PATH=$(yq '.variables.TEST_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
+            REQUIREMENTS_PATH=$(yq '.variables.REQUIREMENTS_PATH' "$file" | sed "s|\${BASIC_PATH}|$BASIC_PATH|g")
             echo "Found TEST_PATH=$TEST_PATH and REQUIREMENTS_PATH=$REQUIREMENTS_PATH"
 
             # Install dependencies
@@ -56,3 +57,4 @@ jobs:
             # Run tests
             pytest "$TEST_PATH"
           done
+      
