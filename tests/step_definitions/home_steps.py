@@ -63,7 +63,10 @@ def search_execute(page_factory):
     home_page.search_execute()
 
 @then('I am redirected to search results page')
-async def is_search_results_opened(page_factory):
+def is_search_results_opened(page_factory):
+    asyncio.run(_is_search_results_opened(page_factory))
+
+async def _is_search_results_opened(page_factory):
     home_page = page_factory('home_page')
     await expect(home_page.page).to_have_url(re.compile(r"https://www\.kiwi\.com/en/search/results.*"))
     assert home_page.page.url.startswith(SEARCH_RESULTS_URL), (
