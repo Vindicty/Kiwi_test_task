@@ -1,5 +1,8 @@
-import asyncio
+import re
+
 from pytest_bdd import given, when, then, scenarios, parsers
+from playwright.sync_api import expect
+
 from config.urls import SEARCH_RESULTS_URL
 
 
@@ -64,11 +67,8 @@ def search_execute(page_factory):
 
 @then('I am redirected to search results page')
 def is_search_results_opened(page_factory):
-    asyncio.run(_is_search_results_opened(page_factory))
-
-async def _is_search_results_opened(page_factory):
     home_page = page_factory('home_page')
-    await expect(home_page.page).to_have_url(re.compile(r"https://www\.kiwi\.com/en/search/results.*"))
+    expect(home_page.page).to_have_url(re.compile(r"https://www\.kiwi\.com/en/search/results.*"))
     assert home_page.page.url.startswith(SEARCH_RESULTS_URL), (
         f'Expected URL to start with {SEARCH_RESULTS_URL}, but got {home_page.page.url}'
     )
