@@ -18,8 +18,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Проверка содержимого (диагностика)
-      - name: List files
+      # Проверка содержимого
+      - name: List files in .github directory
         run: ls -R .github
 
       # Set up Python environment
@@ -36,7 +36,11 @@ jobs:
           sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
           sudo chmod +x /usr/bin/yq
 
-      # Parse all YAML files in .github/tests_pipelines
+      # Install Playwright and browsers
+      - name: Install Playwright and browsers
+        run: playwright install
+
+      # Parse all YAML files in .github/tests_pipelines and run tests
       - name: Load YAML files and run tests
         run: |
           if [ ! -d ".github/tests_pipelines" ]; then
@@ -57,4 +61,3 @@ jobs:
             # Run tests
             pytest "$TEST_PATH"
           done
-      
