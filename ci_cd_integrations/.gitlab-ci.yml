@@ -1,0 +1,17 @@
+stages:
+  - install
+  - tests
+
+variables:
+  PLAYWRIGHT_BROWSERS_PATH: 0  # Устанавливаем браузеры локально
+
+install_dependencies:
+  stage: install
+  script:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+
+run_tests:
+  stage: tests
+  script:
+    - pytest $TEST_PATH

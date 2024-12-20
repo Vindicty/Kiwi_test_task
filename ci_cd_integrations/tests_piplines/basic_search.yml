@@ -1,0 +1,2 @@
+variables:
+  TEST_PATH: "tests/basic_search/test_basic_search.py"
